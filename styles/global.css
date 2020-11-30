@@ -25,3 +25,10 @@ img {
   max-width: 100%;
   display: block;
 }
+
+pre {
+  background-color: #20252C;
+  color: #ffffff;
+  overflow: hidden;
+  overflow-x: auto;
+}
