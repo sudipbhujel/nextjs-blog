@@ -56,11 +56,11 @@ ssh-keygen # for new public and private key
 
 ```
 # Create a new user
-sudo adduser $USERNAME
+sudo adduser <username>
 
 # Add user to "sudo" group
-sudo usermod -aG $USERNAME # Give sudo permission to new user
-sudo usermod -aG sudo $USERNAME
+sudo usermod -aG <username> # Give sudo permission to new user
+sudo usermod -aG sudo <username>
 
 # Check sudo access
 sudo cat /var/log/auth.log
@@ -82,7 +82,7 @@ vi ~/.ssh/authorized_keys
 exit
 
 # Login with new user
-ssh $USERNAME@IP_ADDRESS
+ssh <username>@IP_ADDRESS
 
 # Change file permissions
 chmod 644 ~/.ssh/authorized_keys
@@ -348,3 +348,59 @@ sudo vi /etc/nginx/sites-available/default
 listen [::]:443 http2 ssl ipv6only=on; # managed by Certbot
 listen 443 http2 ssl; # managed by Certbot
 ```
+
+## Necessary command lists
+
+After User creation
+
+```
+# Install nginx
+sudo apt install nginx
+
+# Start nginx
+sudo service nginx start
+
+# Firewall
+sudo ufw allow 'Nginx HTTP'
+
+# Check status of ngnix
+systemctl status nginx
+
+cd /etc/nginx/sites-available
+
+sudo nano default
+
+# Under location / update
+        proxy_pass http://localhost:5000;
+        proxy_http_version 1.1;
+        proxy_set_header Upgrade $http_upgrade;
+        proxy_set_header Connection 'upgrade';
+        proxy_set_header Host $host;
+        proxy_cache_bypass $http_upgrade;
+
+# for sudo permission from action
+sudo visudo -f /etc/sudoers.d/<username>
+
+# Put this line of script
+sudip ALL=(ALL) NOPASSWD: /usr/sbin/service nginx start,/usr/sbin/service nginx stop,/usr/sbin/service nginx restart
+
+# Reboot system
+sudo reboot
+
+# Install npm 
+sudo npm i -g npm
+
+# Install pm2 
+sudo npm i -g pm2
+
+# Install serve
+sudo npm i -g serve
+
+# pm2 task creation for backend
+pm2 start npm --name "backend" -- run start
+
+# pm2 task creation for react app
+pm2 serve build 8082 --spa 
+```
+
+[Nginx Content](./nginx.md)
